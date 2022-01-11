@@ -15,3 +15,9 @@ yarn typeorm migration:run
 ```
 
 A documentation (under construction 🚧) of the API can be accessed at: http://localhost:3333/api-docs/
+
+You can also run:
+```code
+yarn seed:admin
+```
+to create an admin user
