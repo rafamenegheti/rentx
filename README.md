@@ -5,7 +5,7 @@
 ```code
 yarn 
 ```
-- Run the docker-composer(you may want to change the ports of the services at the "docker-compose.yml" file :
+- Run the docker-composer(you may want to change the ports of the services at the "docker-compose.yml" file) :
 ```code 
 docker-compose up 
 ```
