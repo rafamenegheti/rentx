@@ -25,8 +25,6 @@ describe("Create category", () => {
       category.name
     );
 
-    console.log(categoryCreated);
-
     expect(categoryCreated).toEqual(expect.objectContaining(category));
   });
 
