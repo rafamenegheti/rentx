@@ -45,21 +45,11 @@ describe("Create Category Controller", () => {
         Authorization: `Bearer ${token}`,
       });
 
-    await request(app)
-      .post("/categories")
-      .send({
-        name: "Sedan bunitin 2",
-        description: "Category super test 2",
-      })
-      .set({
-        Authorization: `Bearer ${token}`,
-      });
-
     const response = await request(app).get("/categories");
-
-    console.log(response.body);
 
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(1);
+    expect(response.body[0]).toHaveProperty("Sedan bunitin");
+    expect(response.body[0].name).toEqual("id");
   });
 });

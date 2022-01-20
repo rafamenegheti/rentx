@@ -1,6 +1,8 @@
+import { DayJsDateProvider } from "../../../../shared/container/Providers/DateProvider/implementations/DayJsDateProvider";
 import { AppError } from "../../../../shared/errors/AppError";
 import { ICreateUserDTO } from "../../dtos/ICreateUserDTO";
 import { UsersRepositoryInMemory } from "../../repositories/in-memory/UsersRepositoryInMemory";
+import { UsersTokensRepositoryInMemory } from "../../repositories/in-memory/UsersTokensRepositoryInMemory";
 import { CreateUserUseCase } from "../createuser/CreateUserUseCase";
 import { AuthenticateUserUseCase } from "./AuthenticateUserUseCase";
 
@@ -8,11 +10,17 @@ describe("Authenticate user", () => {
   let usersRepositoryInMemory: UsersRepositoryInMemory;
   let authenticateUserUseCase: AuthenticateUserUseCase;
   let createUserUseCase: CreateUserUseCase;
+  let userTokensRepositoryInMemory: UsersTokensRepositoryInMemory;
+  let dateProvider: DayJsDateProvider;
 
   beforeEach(() => {
     usersRepositoryInMemory = new UsersRepositoryInMemory();
+    userTokensRepositoryInMemory = new UsersTokensRepositoryInMemory();
+    dateProvider = new DayJsDateProvider();
     authenticateUserUseCase = new AuthenticateUserUseCase(
-      usersRepositoryInMemory
+      usersRepositoryInMemory,
+      userTokensRepositoryInMemory,
+      dateProvider
     );
     createUserUseCase = new CreateUserUseCase(usersRepositoryInMemory);
   });
@@ -34,28 +42,28 @@ describe("Authenticate user", () => {
   });
 
   it("Should not be able to authenticate a nonexistent user", async () => {
-    await expect(async () => {
-      await authenticateUserUseCase.execute({
+    await expect(
+      authenticateUserUseCase.execute({
         email: "invalid email",
         password: "invalid password",
-      });
-    }).rejects.toBeInstanceOf(AppError);
+      })
+    ).rejects.toEqual(new AppError("Email or password incorrect!"));
   });
 
   it("should not be able to authenticate with incorrect password", async () => {
-    await expect(async () => {
-      const user: ICreateUserDTO = {
-        driver_license: "000123",
-        email: "user@test.com",
-        password: "123",
-        name: "User Test",
-      };
-      await createUserUseCase.execute(user);
+    const user: ICreateUserDTO = {
+      driver_license: "000123",
+      email: "user@test.com",
+      password: "123",
+      name: "User Test",
+    };
+    await createUserUseCase.execute(user);
 
-      await authenticateUserUseCase.execute({
+    await expect(
+      authenticateUserUseCase.execute({
         email: user.email,
         password: "wrong password",
-      });
-    }).rejects.toBeInstanceOf(AppError);
+      })
+    ).rejects.toEqual(new AppError("Email or password incorrect!"));
   });
 });
